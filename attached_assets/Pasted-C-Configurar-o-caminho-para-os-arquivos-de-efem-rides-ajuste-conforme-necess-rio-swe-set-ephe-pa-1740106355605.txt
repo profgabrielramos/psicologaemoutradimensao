@@ -1,0 +1,185 @@
+C
+# Configurar o caminho para os arquivos de efemérides (ajuste conforme necessário)
+swe.set_ephe_path('/path/to/ephe')  # Substitua pelo caminho correto no seu sistema
+
+def download_ephe_files():
+    """Baixa e configura os arquivos de efemérides necessários."""
+    # Criar diretório para as efemérides se não existir
+    ephe_dir = Path("ephe")
+    ephe_dir.mkdir(exist_ok=True)
+    
+    # URL base do repositório
+    base_url = "https://raw.githubusercontent.com/aloistr/swisseph/master/ephe/"
+    
+    # Lista de arquivos essenciais
+    essential_files = [
+        "seas_18.se1",  # Arquivo principal do Sol
+        "semo_18.se1",  # Arquivo principal da Lua
+        "sepl_18.se1"   # Arquivo principal dos planetas
+    ]
+    
+    # Baixar arquivos
+    for filename in essential_files:
+        file_path = ephe_dir / filename
+        if not file_path.exists():
+            print(f"Baixando {filename}...")
+            try:
+                response = requests.get(f"{base_url}{filename}")
+                response.raise_for_status()
+                with open(file_path, "wb") as f:
+                    f.write(response.content)
+            except Exception as e:
+                print(f"Erro ao baixar {filename}: {e}")
+                return False
+    
+    # Configurar o caminho das efemérides
+    swe.set_ephe_path(str(ephe_dir))
+    return True
+
+# Funções auxiliares
+def get_timezone(cidade):
+    """Obtém latitude, longitude e fuso horário a partir do nome da cidade."""
+    geolocator = Nominatim(user_agent="astro_calculator")
+    location = geolocator.geocode(cidade)
+    if not location:
+        raise ValueError("Cidade não encontrada.")
+    lat, lon = location.latitude, location.longitude
+    tf = TimezoneFinder()
+    timezone_str = tf.timezone_at(lat=lat, lng=lon)
+    if not timezone_str:
+        raise ValueError("Fuso horário não encontrado para esta localização.")
+    return timezone_str, lat, lon
+
+def get_julian_day(data_str, hora_str, timezone_str):
+    """Converte data e hora local para Julian Day (UTC)."""
+    try:
+        # Parsear data e hora
+        dia, mes, ano = map(int, data_str.split('/'))
+        hora, minuto = map(int, hora_str.split(':'))
+        # Criar objeto datetime com fuso horário local
+        tz = pytz.timezone(timezone_str)
+        dt_local = tz.localize(datetime(ano, mes, dia, hora, minuto))
+        # Converter para UTC
+        dt_utc = dt_local.astimezone(pytz.UTC)
+        # Calcular Julian Day
+        return swe.utc_to_jd(dt_utc.year, dt_utc.month, dt_utc.day, 
+                            dt_utc.hour, dt_utc.minute, dt_utc.second, 
+                            swe.GREG_CAL)[1]
+    except Exception as e:
+        print(f"Erro ao converter data/hora: {e}")
+        return None
+
+def calcular_signo(graus):
+    """Converte uma posição em graus para o signo correspondente."""
+    signos = ["Áries", "Touro", "Gêmeos", "Câncer", "Leão", "Virgem", 
+              "Libra", "Escorpião", "Sagitário", "Capricórnio", "Aquário", "Peixes"]
+    grau_normalizado = graus % 360
+    indice = int(grau_normalizado // 30)
+    return signos[indice]
+
+def calcular_aspectos(posicoes):
+    """Calcula aspectos principais entre os planetas."""
+    aspectos = []
+    orbes = {"Conjunção": 8, "Oposição": 8, "Trígono": 6, "Quadrratura": 6, "Sextil": 4}
+    tipos_aspectos = {
+        0: "Conjunção", 60: "Sextil", 90: "Quadrratura", 120: "Trígono", 180: "Oposição"
+    }
+    
+    planetas_lista = list(posicoes.keys())
+    for i in range(len(planetas_lista)):
+        for j in range(i + 1, len(planetas_lista)):
+            p1, p2 = planetas_lista[i], planetas_lista[j]
+            grau1, grau2 = posicoes[p1]["graus"], posicoes[p2]["graus"]
+            diff = min((grau1 - grau2) % 360, (grau2 - grau1) % 360)
+            
+            for angulo, tipo in tipos_aspectos.items():
+                if abs(diff - angulo) <= orbes[tipo]:
+                    aspectos.append(f"{p1} em {tipo} com {p2} ({diff:.2f}°)")
+    
+    return aspectos
+
+# Programa principal
+def main():
+    print("Bem-vindo ao cálculo do Mapa Astral!")
+    
+    # Adicionar verificação e download dos arquivos de efemérides
+    print("Verificando arquivos de efemérides...")
+    if not download_ephe_files():
+        print("Erro ao configurar os arquivos de efemérides. O programa não pode continuar.")
+        return
+        
+    data_nascimento = input("Digite sua data de nascimento (dd/mm/aaaa): ")
+    hora_nascimento = input("Digite sua hora de nascimento (hh:mm): ")
+    cidade_nascimento = input("Digite a cidade e país de nascimento (ex.: São Paulo, Brasil): ")
+
+    try:
+        # Obter fuso horário e coordenadas
+        timezone, latitude, longitude = get_timezone(cidade_nascimento)
+        print(f"\nLocal: {cidade_nascimento} (Lat: {latitude:.4f}, Lon: {longitude:.4f})")
+        print(f"Fuso horário: {timezone}")
+
+        # Converter para Julian Day
+        julian_day = get_julian_day(data_nascimento, hora_nascimento, timezone)
+        if julian_day is None:
+            raise ValueError("Erro ao calcular o Julian Day.")
+
+        # Calcular posições planetárias e nodos
+        planetas = {
+            "Sol": swe.SUN, "Lua": swe.MOON, "Mercúrio": swe.MERCURY,
+            "Vênus": swe.VENUS, "Marte": swe.MARS, "Júpiter": swe.JUPITER,
+            "Saturno": swe.SATURN, "Urano": swe.URANUS, "Netuno": swe.NEPTUNE,
+            "Plutão": swe.PLUTO, "Nodo Norte": swe.MEAN_NODE
+        }
+        posicoes = {}
+        for nome, planeta in planetas.items():
+            resultado = swe.calc_ut(julian_day, planeta)
+            pos = resultado[0][0]  # Pegando apenas a longitude eclíptica
+            posicoes[nome] = {"graus": pos, "signo": calcular_signo(pos)}
+
+        # Nodo Sul é oposto ao Nodo Norte
+        nodo_sul_graus = (posicoes["Nodo Norte"]["graus"] + 180) % 360
+        posicoes["Nodo Sul"] = {"graus": nodo_sul_graus, "signo": calcular_signo(nodo_sul_graus)}
+
+        # Calcular Ascendente e casas
+        casas, aspectos_casas = swe.houses(julian_day, latitude, longitude, b'P')  # Placidus
+        ascendente = casas[0]
+        signo_ascendente = calcular_signo(ascendente)
+        meio_do_ceu = casas[9]
+        signo_mc = calcular_signo(meio_do_ceu)
+
+        # Calcular aspectos
+        aspectos = calcular_aspectos(posicoes)
+
+        # Exibir resultados
+        print("\n=== Mapa Astral ===")
+        print(f"Signo Solar: {posicoes['Sol']['signo']} ({posicoes['Sol']['graus']:.2f}°)")
+        print(f"Signo Lunar: {posicoes['Lua']['signo']} ({posicoes['Lua']['graus']:.2f}°)")
+        print(f"Ascendente: {signo_ascendente} ({ascendente:.2f}°)")
+        print(f"Meio do Céu: {signo_mc} ({meio_do_ceu:.2f}°)")
+
+        print("\n=== Outros Planetas ===")
+        for planeta, info in posicoes.items():
+            if planeta not in ["Sol", "Lua", "Nodo Norte", "Nodo Sul"]:
+                print(f"{planeta}: {info['signo']} ({info['graus']:.2f}°)")
+
+        print("\n=== Nodos Lunares ===")
+        print(f"Nodo Norte: {posicoes['Nodo Norte']['signo']} ({posicoes['Nodo Norte']['graus']:.2f}°)")
+        print(f"Nodo Sul: {posicoes['Nodo Sul']['signo']} ({posicoes['Nodo Sul']['graus']:.2f}°)")
+
+        print("\n=== Casas Astrológicas ===")
+        for i, casa in enumerate(casas[:12], 1):
+            signo_casa = calcular_signo(casa)
+            print(f"Casa {i}: {signo_casa} ({casa:.2f}°)")
+
+        print("\n=== Aspectos Principais ===")
+        if aspectos:
+            for aspecto in aspectos:
+                print(aspecto)
+        else:
+            print("Nenhum aspecto significativo encontrado.")
+
+    except Exception as e:
+        print(f"Erro: {e}")
+
+if __name__ == "__main__":
+    main()

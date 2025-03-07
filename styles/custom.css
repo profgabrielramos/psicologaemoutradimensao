@@ -1,0 +1,175 @@
+/* Custom styling for the mystical theme */
+.stApp {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d1a2f 100%);
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.02em;
+    line-height: 1.6;
+}
+
+/* Card styling */
+.cosmic-card {
+    background: rgba(28, 28, 28, 0.95);
+    border: 1px solid rgba(156, 39, 176, 0.3);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 0 20px rgba(156, 39, 176, 0.2);
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.cosmic-card:hover {
+    box-shadow: 0 0 30px rgba(156, 39, 176, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Text styling */
+.glow-text {
+    color: #FF4081;
+    text-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
+    font-size: 2.5rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h1, h2, h3 {
+    color: #FFFFFF;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+p, li {
+    color: #E0E0E0;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+/* Chart container styling */
+.chart-container {
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(156, 39, 176, 0.3);
+    padding: 20px;
+    background: rgba(28, 28, 28, 0.8);
+    transition: all 0.3s ease;
+}
+
+.chart-container:hover {
+    box-shadow: 0 0 40px rgba(156, 39, 176, 0.5);
+}
+
+/* Form inputs styling */
+.stTextInput > div > div, .stDateInput > div > div, .stTimeInput > div > div {
+    background: rgba(40, 40, 40, 0.9) !important;
+    border: 1px solid rgba(156, 39, 176, 0.5) !important;
+    border-radius: 8px !important;
+    color: #FFFFFF !important;
+    font-size: 1.1rem !important;
+    transition: all 0.3s ease;
+}
+
+.stTextInput > div > div:focus-within, 
+.stDateInput > div > div:focus-within, 
+.stTimeInput > div > div:focus-within {
+    border-color: #FF4081 !important;
+    box-shadow: 0 0 10px rgba(255, 64, 129, 0.3) !important;
+}
+
+/* Button styling */
+.stButton > button {
+    background: linear-gradient(135deg, #9C27B0 0%, #FF4081 100%) !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px 30px !important;
+    border-radius: 8px !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.05em !important;
+    transition: all 0.3s ease !important;
+    text-transform: uppercase;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 15px rgba(156, 39, 176, 0.4) !important;
+}
+
+.stButton > button:active {
+    transform: translateY(1px) !important;
+}
+
+/* Labels and text inputs */
+.stTextInput label, .stDateInput label, .stTimeInput label {
+    color: #FFFFFF !important;
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    margin-bottom: 8px !important;
+}
+
+/* Loading spinner */
+.stSpinner > div {
+    border-color: #FF4081 !important;
+}
+
+/* Error messages */
+.stAlert {
+    background: rgba(244, 67, 54, 0.1) !important;
+    border-color: rgba(244, 67, 54, 0.5) !important;
+    color: #FFFFFF !important;
+}
+
+/* Success messages */
+.stSuccess {
+    background: rgba(76, 175, 80, 0.1) !important;
+    border-color: rgba(76, 175, 80, 0.5) !important;
+    color: #FFFFFF !important;
+}
+
+/* Estilo especial para o card do signo solar */
+.signo-solar-card {
+    background: linear-gradient(135deg, rgba(156, 39, 176, 0.2) 0%, rgba(255, 64, 129, 0.2) 100%);
+    text-align: center;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 2px solid rgba(156, 39, 176, 0.5);
+    transform: translateY(0);
+    transition: all 0.3s ease;
+}
+
+.signo-solar-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(156, 39, 176, 0.3);
+}
+
+.signo-symbol {
+    font-size: 4rem;
+    color: #FF4081;
+    text-shadow: 0 0 20px rgba(255, 64, 129, 0.5);
+    margin-bottom: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+.signo-nome {
+    font-size: 2.5rem;
+    color: #FFFFFF;
+    margin: 1rem 0;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+}
+
+.signo-grau {
+    font-size: 1.2rem;
+    color: #E0E0E0;
+    font-family: 'Courier New', monospace;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
