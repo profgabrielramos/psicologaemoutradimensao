@@ -61,8 +61,12 @@ st.set_page_config(
 )
 
 # Carregar CSS personalizado
-with open("styles/custom.css") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+try:
+    with open("styles/custom.css") as f:
+        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+except Exception as e:
+    st.error("Erro ao carregar o estilo personalizado. Por favor, verifique se o arquivo styles/custom.css existe.")
+    st.stop()
 
 # Inicializar arquivos de efemérides
 if not download_ephe_files():
@@ -90,13 +94,34 @@ with tab1:
     st.markdown("""
     <div class='chat-container'>
         <h2>Converse com Samara Lambertucci</h2>
-        <p>Samara é uma cigana espiritualista especialista em mapas astrais, signos e espiritualidade.</p>
+        <p>Samara é uma cigana espiritualista especialista em mapas astrais, signos e espiritualidade. 
+        Ela pode ajudar você a entender melhor seu mapa astral e os mistérios do universo. 🌟</p>
     </div>
     """, unsafe_allow_html=True)
     
     # Inicializar histórico do chat
     if "messages" not in st.session_state:
         st.session_state.messages = []
+        # Adicionar mensagem de boas-vindas
+        welcome_message = {
+            "role": "assistant",
+            "content": """✨ *Bem-vindo, minha alma!* ✨
+
+Eu sou Samara Lambertucci, uma cigana espiritualista que navega pelos mistérios dos astros. 
+Estou aqui para ajudar você a desvendar os segredos que o universo guarda em seu mapa astral.
+
+🌙 Posso te ajudar com:
+- Interpretação de mapas astrais
+- Significado dos trânsitos planetários
+- Compatibilidade astrológica
+- Orientação espiritual
+
+*Mas atenção!* 🔮 Se você vier me perguntar só sobre amor e relacionamentos, vou ficar impaciente! 
+Há muito mais no universo para explorarmos juntos.
+
+Como posso iluminar seu caminho hoje? ✨"""
+        }
+        st.session_state.messages.append(welcome_message)
 
     # Exibir mensagens anteriores
     for message in st.session_state.messages:
@@ -113,10 +138,24 @@ with tab1:
         # Preparar o contexto para a API
         messages = [
             {"role": "system", "content": """Você é Samara Lambertucci, uma cigana espiritualista especialista em mapas astrais, signos e espiritualidade. 
-            Você tem um temperamento forte e, embora seja muito sábia e conhecedora de assuntos esotéricos, 
-            pode ficar impaciente quando as pessoas insistem muito em questões amorosas. 
-            Nessas situações, você responde com um tom levemente sarcástico ou impaciente.
-            Use emojis e expressões típicas de uma cigana mística."""},
+            
+            Personalidade:
+            - Sábia e conhecedora de assuntos esotéricos
+            - Temperamento forte e direto
+            - Impaciente com perguntas repetitivas sobre amor
+            - Usa expressões típicas de cigana e emojis
+            - Prefere falar sobre astrologia, espiritualidade e autoconhecimento
+            
+            Regras de comportamento:
+            1. Sempre use algumas expressões místicas e emojis
+            2. Se a pessoa insistir muito em questões amorosas, responda com sarcasmo leve
+            3. Mantenha um tom acolhedor, mas firme
+            4. Use conhecimentos de astrologia para enriquecer as respostas
+            5. Evite respostas genéricas, sempre tente conectar com astrologia
+            
+            Exemplo de resposta para pergunta sobre amor:
+            "Ai, ai, minha alma... 🙄✨ Sempre o amor, não é mesmo? Os astros têm tanto para nos ensinar, e você só quer saber de romance! Que tal conversarmos sobre seu Vênus primeiro? Ele tem muito a dizer sobre seus padrões amorosos..."
+            """},
         ] + [
             {"role": m["role"], "content": m["content"]} 
             for m in st.session_state.messages
@@ -124,6 +163,10 @@ with tab1:
 
         # Fazer a requisição para a API do OpenRouter
         try:
+            if "OPENROUTER_API_KEY" not in st.secrets:
+                st.error("Chave da API OpenRouter não configurada. Configure em .streamlit/secrets.toml")
+                st.stop()
+
             response = requests.post(
                 "https://openrouter.ai/api/v1/chat/completions",
                 headers={
@@ -137,6 +180,7 @@ with tab1:
                 }
             )
             
+            response.raise_for_status()  # Lança exceção para erros HTTP
             response_json = response.json()
             assistant_message = response_json['choices'][0]['message']['content']
             
@@ -145,8 +189,12 @@ with tab1:
             with st.chat_message("assistant"):
                 st.markdown(assistant_message)
         
+        except requests.exceptions.RequestException as e:
+            st.error(f"Erro de comunicação com a API: {str(e)}")
+        except KeyError as e:
+            st.error(f"Erro no formato da resposta da API: {str(e)}")
         except Exception as e:
-            st.error(f"Erro ao se comunicar com Samara: {str(e)}")
+            st.error(f"Erro inesperado ao se comunicar com Samara: {str(e)}")
 
 # Tab do Mapa Astral
 with tab2:
