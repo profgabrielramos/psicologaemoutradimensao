@@ -73,8 +73,9 @@ if not download_ephe_files():
     st.error("Falha ao inicializar dados astronômicos. Por favor, tente novamente.")
     st.stop()
 
-# Efeito de névoa
+# Efeito de fundo
 st.markdown("""
+<div class='background-effect'></div>
 <div class='mist-effect'></div>
 """, unsafe_allow_html=True)
 
@@ -82,7 +83,7 @@ st.markdown("""
 st.markdown("""
 <div class='title-container'>
     <img src='https://placekitten.com/200/200' alt='Gato místico'>
-    <h1>✨ Psicóloga em Outra Dimensão ✨</h1>
+    <h1>Psicóloga em Outra Dimensão</h1>
 </div>
 """, unsafe_allow_html=True)
 
@@ -94,7 +95,7 @@ with tab1:
     # Hero Section
     st.markdown("""
     <div class='hero-section'>
-        <h2>Bem-vindo, minha alma! ✨</h2>
+        <h2>Bem-vindo, minha alma!</h2>
         <p>Eu sou Samara Lambertucci, uma cigana espiritualista que navega pelos mistérios dos astros. 
         Estou aqui para ajudar você a desvendar os segredos que o universo guarda em seu mapa astral.</p>
     </div>
@@ -125,7 +126,7 @@ with tab1:
             <i>✅</i>
             <span>Orientação espiritual</span>
         </div>
-        <div class='service-item' style='background: rgba(255, 87, 87, 0.1);'>
+        <div class='service-item' style='background: rgba(255, 87, 87, 0.05); border-color: rgba(255, 87, 87, 0.2);'>
             <i>❌</i>
             <span><strong>Mas atenção!</strong> Se você veio me perguntar sobre amor e relacionamento… já vou avisando: eu NÃO tenho paciência! O universo tem assuntos muito mais interessantes para explorarmos.</span>
         </div>
@@ -260,7 +261,7 @@ with tab2:
     st.markdown("""
     <div class='form-container'>
         <h2>Gere seu Mapa Astral</h2>
-        <p>Insira seus dados de nascimento para descobrir as posições celestiais no momento do seu nascimento.</p>
+        <p>Insira seus dados de nascimento para descobrir as posições celestiais no momento do seu nascimento e entender como os astros influenciam sua jornada.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -288,12 +289,12 @@ with tab2:
         )
 
     st.markdown("<div class='main-cta'>", unsafe_allow_html=True)
-    generate_button = st.button("Gerar Mapa Astral 🔮", key="generate")
+    generate_button = st.button("Gerar Mapa Astral", key="generate")
     st.markdown("</div>", unsafe_allow_html=True)
 
     if generate_button:
         try:
-            with st.spinner("🌟 Calculando posições celestiais..."):
+            with st.spinner("Calculando posições celestiais..."):
                 location_data = get_location_data(birth_place)
                 jd = calculate_julian_day(birth_date, birth_time, location_data['timezone'])
                 planet_positions = get_planet_positions(jd)
@@ -307,13 +308,10 @@ with tab2:
                 signo_solar = calcular_signo(planet_positions['Sun']['longitude'])
                 simbolo_solar = ZODIAC_SYMBOLS[signo_solar]
 
-                st.markdown("<div style='text-align: center;'><h2 class='glow-text'>Seu Mapa Astral</h2></div>", unsafe_allow_html=True)
-
-                # Destaque do Signo Solar
                 st.markdown(f"""
                 <div class='hero-section'>
-                    <h2>{simbolo_solar} {signo_solar} {simbolo_solar}</h2>
-                    <p>Seu Sol está a {planet_positions['Sun']['longitude']:.2f}° em {signo_solar}</p>
+                    <h2>{simbolo_solar} Seu Sol está em {signo_solar} {simbolo_solar}</h2>
+                    <p>Posição exata: {planet_positions['Sun']['longitude']:.2f}°</p>
                 </div>
                 """, unsafe_allow_html=True)
 
