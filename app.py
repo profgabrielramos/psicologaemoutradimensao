@@ -53,6 +53,62 @@ def calcular_signo(longitude):
         signo = "Peixes"
     return signo
 
+# Função para o chat com Samara
+def chat_with_samara(message):
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+        # Adicionar mensagem de boas-vindas
+        welcome_message = {
+            "role": "assistant",
+            "content": "Olá, sou Samara Lambertucci. Como posso ajudar você hoje?"
+        }
+        st.session_state.messages.append(welcome_message)
+    
+    if message:
+        # Adicionar mensagem do usuário
+        st.session_state.messages.append({"role": "user", "content": message})
+        
+        # Preparar o contexto para a API
+        messages = [
+            {"role": "system", "content": """Você é Samara Lambertucci, uma cigana espiritualista especialista em mapas astrais, signos e espiritualidade. 
+            Seja direta e concisa em suas respostas, mantendo-as curtas (máximo 2-3 frases).
+            Você tem temperamento forte e é impaciente com perguntas sobre amor."""},
+        ] + [
+            {"role": m["role"], "content": m["content"]} 
+            for m in st.session_state.messages
+        ]
+
+        # Fazer a requisição para a API do OpenRouter
+        try:
+            if "OPENROUTER_API_KEY" not in st.secrets:
+                return "Erro: API não configurada."
+
+            response = requests.post(
+                "https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {st.secrets['OPENROUTER_API_KEY']}",
+                    "HTTP-Referer": "https://psicologaemoutradimensao.streamlit.app",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "anthropic/claude-3-opus",
+                    "messages": messages
+                }
+            )
+            
+            response.raise_for_status()
+            response_json = response.json()
+            assistant_message = response_json['choices'][0]['message']['content']
+            
+            # Adicionar resposta ao histórico
+            st.session_state.messages.append({"role": "assistant", "content": assistant_message})
+            return assistant_message
+        
+        except Exception as e:
+            return f"Erro: {str(e)}"
+    
+    return None
+
 # Configurações iniciais do Streamlit
 st.set_page_config(
     page_title="Psicóloga em Outra Dimensão",
@@ -73,12 +129,6 @@ if not download_ephe_files():
     st.error("Falha ao inicializar dados astronômicos. Por favor, tente novamente.")
     st.stop()
 
-# Efeito de fundo
-st.markdown("""
-<div class='background-effect'></div>
-<div class='mist-effect'></div>
-""", unsafe_allow_html=True)
-
 # Título e imagem
 st.markdown("""
 <div class='title-container'>
@@ -88,180 +138,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Tabs para navegação
-tab1, tab2 = st.tabs(["🔮 Converse com Samara", "🌟 Mapa Astral"])
-
-# Tab do Chat
-with tab1:
-    # Hero Section
-    st.markdown("""
-    <div class='hero-section'>
-        <h2>Bem-vindo, minha alma!</h2>
-        <p>Eu sou Samara Lambertucci, uma cigana espiritualista que navega pelos mistérios dos astros. 
-        Estou aqui para ajudar você a desvendar os segredos que o universo guarda em seu mapa astral.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # CTA Principal
-    st.markdown("<div class='main-cta'>", unsafe_allow_html=True)
-    st.button("Fale comigo agora", key="main_cta")
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    # Seção de Serviços
-    st.markdown("""
-    <div class='services-section'>
-        <h2>O que posso fazer por você?</h2>
-        <div class='service-item'>
-            <i>✅</i>
-            <span>Interpretação de mapas astrais</span>
-        </div>
-        <div class='service-item'>
-            <i>✅</i>
-            <span>Significado dos trânsitos planetários</span>
-        </div>
-        <div class='service-item'>
-            <i>✅</i>
-            <span>Compatibilidade astrológica</span>
-        </div>
-        <div class='service-item'>
-            <i>✅</i>
-            <span>Orientação espiritual</span>
-        </div>
-        <div class='service-item' style='background: rgba(255, 87, 87, 0.05); border-color: rgba(255, 87, 87, 0.2);'>
-            <i>❌</i>
-            <span><strong>Mas atenção!</strong> Se você veio me perguntar sobre amor e relacionamento… já vou avisando: eu NÃO tenho paciência! O universo tem assuntos muito mais interessantes para explorarmos.</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Seção de Depoimentos
-    st.markdown("""
-    <div class='testimonials-section'>
-        <h2>O que dizem sobre mim</h2>
-        <div class='testimonial-card'>
-            <p class='testimonial-text'>Samara me ajudou a entender padrões da minha vida que eu nunca tinha percebido! Incrível como ela conectou os pontos através do meu mapa astral.</p>
-            <p class='testimonial-author'>- Maria C.</p>
-        </div>
-        <div class='testimonial-card'>
-            <p class='testimonial-text'>Achei que seria mais uma consulta genérica, mas a Samara foi direta e precisa. Ela não tem papas na língua, mas é exatamente isso que torna a consulta tão valiosa!</p>
-            <p class='testimonial-author'>- João P.</p>
-        </div>
-        <div class='testimonial-card'>
-            <p class='testimonial-text'>A orientação espiritual da Samara mudou minha perspectiva sobre meus desafios. Ela me mostrou como os astros influenciam minha jornada de uma forma que nunca imaginei.</p>
-            <p class='testimonial-author'>- Ana L.</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Chat Container
-    st.markdown("""
-    <div class='chat-container'>
-        <h2>Que mistério do cosmos você quer desvendar hoje?</h2>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Inicializar histórico do chat
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-        # Adicionar mensagem de boas-vindas
-        welcome_message = {
-            "role": "assistant",
-            "content": """✨ *Bem-vindo, minha alma!* ✨
-
-Eu sou Samara Lambertucci, uma cigana espiritualista que navega pelos mistérios dos astros. 
-Estou aqui para ajudar você a desvendar os segredos que o universo guarda em seu mapa astral.
-
-🌙 Posso te ajudar com:
-- Interpretação de mapas astrais
-- Significado dos trânsitos planetários
-- Compatibilidade astrológica
-- Orientação espiritual
-
-*Mas atenção!* 🔮 Se você vier me perguntar só sobre amor e relacionamentos, vou ficar impaciente! 
-Há muito mais no universo para explorarmos juntos.
-
-Como posso iluminar seu caminho hoje? ✨"""
-        }
-        st.session_state.messages.append(welcome_message)
-
-    # Exibir mensagens anteriores
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
-    # Chat input
-    if prompt := st.chat_input("Digite sua mensagem para Samara..."):
-        # Adicionar mensagem do usuário ao histórico
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
-
-        # Preparar o contexto para a API
-        messages = [
-            {"role": "system", "content": """Você é Samara Lambertucci, uma cigana espiritualista especialista em mapas astrais, signos e espiritualidade. 
-            
-            Personalidade:
-            - Sábia e conhecedora de assuntos esotéricos
-            - Temperamento forte e direto
-            - Impaciente com perguntas repetitivas sobre amor
-            - Usa expressões típicas de cigana e emojis
-            - Prefere falar sobre astrologia, espiritualidade e autoconhecimento
-            
-            Regras de comportamento:
-            1. Sempre use algumas expressões místicas e emojis
-            2. Se a pessoa insistir muito em questões amorosas, responda com sarcasmo leve
-            3. Mantenha um tom acolhedor, mas firme
-            4. Use conhecimentos de astrologia para enriquecer as respostas
-            5. Evite respostas genéricas, sempre tente conectar com astrologia
-            
-            Exemplo de resposta para pergunta sobre amor:
-            "Ai, ai, minha alma... 🙄✨ Sempre o amor, não é mesmo? Os astros têm tanto para nos ensinar, e você só quer saber de romance! Que tal conversarmos sobre seu Vênus primeiro? Ele tem muito a dizer sobre seus padrões amorosos..."
-            """},
-        ] + [
-            {"role": m["role"], "content": m["content"]} 
-            for m in st.session_state.messages
-        ]
-
-        # Fazer a requisição para a API do OpenRouter
-        try:
-            if "OPENROUTER_API_KEY" not in st.secrets:
-                st.error("Chave da API OpenRouter não configurada. Configure em .streamlit/secrets.toml")
-                st.stop()
-
-            response = requests.post(
-                "https://openrouter.ai/api/v1/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {st.secrets['OPENROUTER_API_KEY']}",
-                    "HTTP-Referer": "https://psicologaemoutradimensao.streamlit.app",
-                    "Content-Type": "application/json"
-                },
-                json={
-                    "model": "anthropic/claude-3-opus",
-                    "messages": messages
-                }
-            )
-            
-            response.raise_for_status()  # Lança exceção para erros HTTP
-            response_json = response.json()
-            assistant_message = response_json['choices'][0]['message']['content']
-            
-            # Adicionar resposta ao histórico
-            st.session_state.messages.append({"role": "assistant", "content": assistant_message})
-            with st.chat_message("assistant"):
-                st.markdown(assistant_message)
-        
-        except requests.exceptions.RequestException as e:
-            st.error(f"Erro de comunicação com a API: {str(e)}")
-        except KeyError as e:
-            st.error(f"Erro no formato da resposta da API: {str(e)}")
-        except Exception as e:
-            st.error(f"Erro inesperado ao se comunicar com Samara: {str(e)}")
+tab1, tab2 = st.tabs(["🌟 Mapa Astral", "ℹ️ Sobre"])
 
 # Tab do Mapa Astral
-with tab2:
+with tab1:
     st.markdown("""
-    <div class='form-container'>
+    <div class='section'>
         <h2>Gere seu Mapa Astral</h2>
-        <p>Insira seus dados de nascimento para descobrir as posições celestiais no momento do seu nascimento e entender como os astros influenciam sua jornada.</p>
+        <p>Insira seus dados de nascimento para descobrir as posições celestiais no momento do seu nascimento.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -309,8 +193,8 @@ with tab2:
                 simbolo_solar = ZODIAC_SYMBOLS[signo_solar]
 
                 st.markdown(f"""
-                <div class='hero-section'>
-                    <h2>{simbolo_solar} Seu Sol está em {signo_solar} {simbolo_solar}</h2>
+                <div class='section'>
+                    <h2>{simbolo_solar} Seu Sol está em {signo_solar}</h2>
                     <p>Posição exata: {planet_positions['Sun']['longitude']:.2f}°</p>
                 </div>
                 """, unsafe_allow_html=True)
@@ -324,7 +208,7 @@ with tab2:
                     st.markdown("</div>", unsafe_allow_html=True)
 
                 with info_col:
-                    st.markdown("<div class='services-section'>", unsafe_allow_html=True)
+                    st.markdown("<div class='section'>", unsafe_allow_html=True)
                     st.markdown("<h3>🌍 Posições Planetárias</h3>", unsafe_allow_html=True)
                     for planet, data in planet_positions.items():
                         planet_name = PLANET_NAMES.get(planet, planet)
@@ -337,7 +221,7 @@ with tab2:
                         st.write(f"Casa {i}: {cusp:.2f}° em {signo_casa}")
                     st.markdown("</div>", unsafe_allow_html=True)
 
-                    st.markdown("<div class='services-section'>", unsafe_allow_html=True)
+                    st.markdown("<div class='section'>", unsafe_allow_html=True)
                     st.markdown("<h3>🌟 Pontos Importantes</h3>", unsafe_allow_html=True)
                     asc_signo = calcular_signo(houses['ascendant'])
                     mc_signo = calcular_signo(houses['mc'])
@@ -347,6 +231,55 @@ with tab2:
 
         except Exception as e:
             st.error(f"Ocorreu um erro: {str(e)}")
+
+# Tab Sobre
+with tab2:
+    st.markdown("""
+    <div class='section'>
+        <h2>Sobre o Projeto</h2>
+        <p>Este é um visualizador de mapas astrais que permite aos usuários gerar e explorar seus mapas astrais com base em sua data, hora e local de nascimento.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div class='section'>
+        <h2>Serviços</h2>
+        <div class='service-item'>
+            <i>✅</i>
+            <span>Interpretação de mapas astrais</span>
+        </div>
+        <div class='service-item'>
+            <i>✅</i>
+            <span>Significado dos trânsitos planetários</span>
+        </div>
+        <div class='service-item'>
+            <i>✅</i>
+            <span>Compatibilidade astrológica</span>
+        </div>
+        <div class='service-item'>
+            <i>✅</i>
+            <span>Orientação espiritual</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("""
+    <div class='section'>
+        <h2>Depoimentos</h2>
+        <div class='testimonial-card'>
+            <p class='testimonial-text'>Samara me ajudou a entender padrões da minha vida que eu nunca tinha percebido! Incrível como ela conectou os pontos através do meu mapa astral.</p>
+            <p class='testimonial-author'>- Maria C.</p>
+        </div>
+        <div class='testimonial-card'>
+            <p class='testimonial-text'>Achei que seria mais uma consulta genérica, mas a Samara foi direta e precisa. Ela não tem papas na língua, mas é exatamente isso que torna a consulta tão valiosa!</p>
+            <p class='testimonial-author'>- João P.</p>
+        </div>
+        <div class='testimonial-card'>
+            <p class='testimonial-text'>A orientação espiritual da Samara mudou minha perspectiva sobre meus desafios. Ela me mostrou como os astros influenciam minha jornada de uma forma que nunca imaginei.</p>
+            <p class='testimonial-author'>- Ana L.</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Rodapé
 st.markdown("""
@@ -359,3 +292,174 @@ st.markdown("""
     <p>Feito com ✨ e energia cósmica</p>
 </div>
 """, unsafe_allow_html=True)
+
+# Popup da Samara
+if "popup_open" not in st.session_state:
+    st.session_state.popup_open = False
+    
+if "popup_message" not in st.session_state:
+    st.session_state.popup_message = ""
+    
+# JavaScript para controlar o popup
+js_code = """
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Criar o popup
+    const popup = document.createElement('div');
+    popup.className = 'samara-popup';
+    popup.innerHTML = '🔮';
+    document.body.appendChild(popup);
+    
+    // Criar o conteúdo do popup
+    const popupContent = document.createElement('div');
+    popupContent.className = 'samara-popup-content';
+    popupContent.innerHTML = `
+        <div class="samara-popup-close">×</div>
+        <div class="samara-popup-header">
+            <img src="https://placekitten.com/100/100" alt="Samara">
+            <h3>Samara Lambertucci</h3>
+        </div>
+        <div class="samara-popup-messages" id="samara-messages">
+            <div class="chat-message assistant-message">
+                Olá, sou Samara Lambertucci. Como posso ajudar você hoje?
+            </div>
+        </div>
+        <div class="samara-popup-input">
+            <input type="text" id="samara-input" placeholder="Digite sua mensagem...">
+            <button id="samara-send">Enviar</button>
+        </div>
+    `;
+    document.body.appendChild(popupContent);
+    
+    // Adicionar eventos
+    popup.addEventListener('click', function() {
+        popupContent.classList.toggle('active');
+    });
+    
+    document.querySelector('.samara-popup-close').addEventListener('click', function(e) {
+        e.stopPropagation();
+        popupContent.classList.remove('active');
+    });
+    
+    // Função para enviar mensagem
+    function sendMessage() {
+        const input = document.getElementById('samara-input');
+        const message = input.value.trim();
+        
+        if (message) {
+            // Adicionar mensagem do usuário
+            const messagesContainer = document.getElementById('samara-messages');
+            messagesContainer.innerHTML += `
+                <div class="chat-message user-message">
+                    ${message}
+                </div>
+            `;
+            
+            // Limpar input
+            input.value = '';
+            
+            // Rolar para o final
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // Enviar para o backend via Streamlit
+            const messageInput = document.createElement('input');
+            messageInput.type = 'hidden';
+            messageInput.id = 'samara-message-input';
+            messageInput.value = message;
+            document.body.appendChild(messageInput);
+            
+            // Disparar evento para o Streamlit
+            const event = new Event('samaraMessage');
+            document.dispatchEvent(event);
+            
+            // Mostrar indicador de digitação
+            messagesContainer.innerHTML += `
+                <div class="chat-message assistant-message" id="typing-indicator">
+                    <em>Digitando...</em>
+                </div>
+            `;
+        }
+    }
+    
+    // Evento de envio
+    document.getElementById('samara-send').addEventListener('click', sendMessage);
+    document.getElementById('samara-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+    
+    // Receber resposta do Streamlit
+    window.addEventListener('message', function(event) {
+        const data = event.data;
+        
+        if (data.type === 'samaraResponse') {
+            const messagesContainer = document.getElementById('samara-messages');
+            
+            // Remover indicador de digitação
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+            
+            // Adicionar resposta
+            messagesContainer.innerHTML += `
+                <div class="chat-message assistant-message">
+                    ${data.message}
+                </div>
+            `;
+            
+            // Rolar para o final
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    });
+});
+
+// Função para verificar mensagens do usuário
+function checkSamaraMessage() {
+    const messageInput = document.getElementById('samara-message-input');
+    if (messageInput) {
+        const message = messageInput.value;
+        messageInput.remove();
+        
+        // Enviar para o Streamlit
+        window.parent.postMessage({
+            type: 'streamlit:setComponentValue',
+            value: message
+        }, '*');
+        
+        return message;
+    }
+    return null;
+}
+
+// Verificar periodicamente
+setInterval(checkSamaraMessage, 500);
+</script>
+"""
+
+st.markdown(js_code, unsafe_allow_html=True)
+
+# Componente para receber mensagens do JavaScript
+popup_message = st.empty()
+
+# Processar mensagem se houver
+if st.session_state.popup_message:
+    response = chat_with_samara(st.session_state.popup_message)
+    
+    # Enviar resposta de volta para o JavaScript
+    if response:
+        st.markdown(
+            f"""
+            <script>
+            window.parent.postMessage({{
+                type: 'samaraResponse',
+                message: '{response.replace("'", "\\'")}'
+            }}, '*');
+            </script>
+            """,
+            unsafe_allow_html=True
+        )
+    
+    # Limpar a mensagem
+    st.session_state.popup_message = ""
