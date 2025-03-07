@@ -1,9 +1,197 @@
-/* Custom styling for the mystical theme */
+/* Variáveis de cores */
+:root {
+    --primary-color: #9b6dff;
+    --secondary-color: #4a90e2;
+    --accent-color: #ffd700;
+    --background-color: #1a1a2e;
+    --text-color: #ffffff;
+}
+
+/* Estilos globais */
 .stApp {
-    background: linear-gradient(135deg, #1a1a1a 0%, #2d1a2f 100%);
+    background: linear-gradient(135deg, var(--background-color), #2a1b3d);
+    color: var(--text-color);
     font-family: 'Poppins', sans-serif;
     letter-spacing: 0.02em;
     line-height: 1.6;
+}
+
+/* Título principal com efeito mágico */
+.title-container {
+    text-align: center;
+    padding: 2rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.title-container h1 {
+    font-family: 'Cinzel', serif;
+    color: var(--accent-color);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    margin-bottom: 1rem;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+.title-container img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+/* Efeito de partículas mágicas */
+.magic-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Container do chat */
+.chat-container {
+    background: rgba(26, 26, 46, 0.8);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 0 20px rgba(155, 109, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.chat-message {
+    padding: 10px 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.user-message {
+    background: rgba(74, 144, 226, 0.2);
+    margin-left: 20%;
+}
+
+.assistant-message {
+    background: rgba(155, 109, 255, 0.2);
+    margin-right: 20%;
+}
+
+/* Formulário do mapa astral */
+.form-container {
+    background: rgba(26, 26, 46, 0.8);
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 0 20px rgba(155, 109, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+/* Botões personalizados */
+.stButton > button {
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(155, 109, 255, 0.3);
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(155, 109, 255, 0.5);
+}
+
+/* Animações */
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px var(--accent-color),
+                     0 0 10px var(--accent-color),
+                     0 0 15px var(--primary-color);
+    }
+    to {
+        text-shadow: 0 0 10px var(--accent-color),
+                     0 0 20px var(--accent-color),
+                     0 0 30px var(--primary-color);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Efeito de névoa */
+.mist-effect {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(155, 109, 255, 0.05), transparent);
+    pointer-events: none;
+    z-index: 1;
+    animation: mistFlow 20s ease-in-out infinite;
+}
+
+@keyframes mistFlow {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.1;
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .chat-message {
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+}
+
+/* Customização dos widgets do Streamlit */
+.stTextInput > div > div > input {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
+}
+
+.stSelectbox > div > div > select {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
+}
+
+/* Efeito de brilho para elementos importantes */
+.highlight {
+    position: relative;
+}
+
+.highlight::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border-radius: 15px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    z-index: -1;
+    opacity: 0.3;
+    filter: blur(8px);
 }
 
 /* Card styling */
@@ -72,29 +260,6 @@ p, li {
 .stTimeInput > div > div:focus-within {
     border-color: #FF4081 !important;
     box-shadow: 0 0 10px rgba(255, 64, 129, 0.3) !important;
-}
-
-/* Button styling */
-.stButton > button {
-    background: linear-gradient(135deg, #9C27B0 0%, #FF4081 100%) !important;
-    color: white !important;
-    border: none !important;
-    padding: 12px 30px !important;
-    border-radius: 8px !important;
-    font-size: 1.1rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.05em !important;
-    transition: all 0.3s ease !important;
-    text-transform: uppercase;
-}
-
-.stButton > button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 5px 15px rgba(156, 39, 176, 0.4) !important;
-}
-
-.stButton > button:active {
-    transform: translateY(1px) !important;
 }
 
 /* Labels and text inputs */
