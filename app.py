@@ -91,11 +91,70 @@ tab1, tab2 = st.tabs(["🔮 Converse com Samara", "🌟 Mapa Astral"])
 
 # Tab do Chat
 with tab1:
+    # Hero Section
+    st.markdown("""
+    <div class='hero-section'>
+        <h2>Bem-vindo, minha alma! ✨</h2>
+        <p>Eu sou Samara Lambertucci, uma cigana espiritualista que navega pelos mistérios dos astros. 
+        Estou aqui para ajudar você a desvendar os segredos que o universo guarda em seu mapa astral.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # CTA Principal
+    st.markdown("<div class='main-cta'>", unsafe_allow_html=True)
+    st.button("Fale comigo agora", key="main_cta")
+    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # Seção de Serviços
+    st.markdown("""
+    <div class='services-section'>
+        <h2>O que posso fazer por você?</h2>
+        <div class='service-item'>
+            <i>✅</i>
+            <span>Interpretação de mapas astrais</span>
+        </div>
+        <div class='service-item'>
+            <i>✅</i>
+            <span>Significado dos trânsitos planetários</span>
+        </div>
+        <div class='service-item'>
+            <i>✅</i>
+            <span>Compatibilidade astrológica</span>
+        </div>
+        <div class='service-item'>
+            <i>✅</i>
+            <span>Orientação espiritual</span>
+        </div>
+        <div class='service-item' style='background: rgba(255, 87, 87, 0.1);'>
+            <i>❌</i>
+            <span><strong>Mas atenção!</strong> Se você veio me perguntar sobre amor e relacionamento… já vou avisando: eu NÃO tenho paciência! O universo tem assuntos muito mais interessantes para explorarmos.</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Seção de Depoimentos
+    st.markdown("""
+    <div class='testimonials-section'>
+        <h2>O que dizem sobre mim</h2>
+        <div class='testimonial-card'>
+            <p class='testimonial-text'>Samara me ajudou a entender padrões da minha vida que eu nunca tinha percebido! Incrível como ela conectou os pontos através do meu mapa astral.</p>
+            <p class='testimonial-author'>- Maria C.</p>
+        </div>
+        <div class='testimonial-card'>
+            <p class='testimonial-text'>Achei que seria mais uma consulta genérica, mas a Samara foi direta e precisa. Ela não tem papas na língua, mas é exatamente isso que torna a consulta tão valiosa!</p>
+            <p class='testimonial-author'>- João P.</p>
+        </div>
+        <div class='testimonial-card'>
+            <p class='testimonial-text'>A orientação espiritual da Samara mudou minha perspectiva sobre meus desafios. Ela me mostrou como os astros influenciam minha jornada de uma forma que nunca imaginei.</p>
+            <p class='testimonial-author'>- Ana L.</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Chat Container
     st.markdown("""
     <div class='chat-container'>
-        <h2>Converse com Samara Lambertucci</h2>
-        <p>Samara é uma cigana espiritualista especialista em mapas astrais, signos e espiritualidade. 
-        Ela pode ajudar você a entender melhor seu mapa astral e os mistérios do universo. 🌟</p>
+        <h2>Que mistério do cosmos você quer desvendar hoje?</h2>
     </div>
     """, unsafe_allow_html=True)
     
@@ -228,7 +287,11 @@ with tab2:
             help="Digite a cidade e país de nascimento"
         )
 
-    if st.button("✨ Gerar Mapa Astral ✨", key="generate"):
+    st.markdown("<div class='main-cta'>", unsafe_allow_html=True)
+    generate_button = st.button("Gerar Mapa Astral 🔮", key="generate")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    if generate_button:
         try:
             with st.spinner("🌟 Calculando posições celestiais..."):
                 location_data = get_location_data(birth_place)
@@ -248,10 +311,9 @@ with tab2:
 
                 # Destaque do Signo Solar
                 st.markdown(f"""
-                <div class='cosmic-card signo-solar-card'>
-                    <div class='signo-symbol'>{simbolo_solar}</div>
-                    <h2 class='signo-nome'>{signo_solar}</h2>
-                    <p class='signo-grau'>{planet_positions['Sun']['longitude']:.2f}°</p>
+                <div class='hero-section'>
+                    <h2>{simbolo_solar} {signo_solar} {simbolo_solar}</h2>
+                    <p>Seu Sol está a {planet_positions['Sun']['longitude']:.2f}° em {signo_solar}</p>
                 </div>
                 """, unsafe_allow_html=True)
 
@@ -264,21 +326,25 @@ with tab2:
                     st.markdown("</div>", unsafe_allow_html=True)
 
                 with info_col:
-                    st.markdown("<div class='cosmic-card highlight'>", unsafe_allow_html=True)
+                    st.markdown("<div class='services-section'>", unsafe_allow_html=True)
                     st.markdown("<h3>🌍 Posições Planetárias</h3>", unsafe_allow_html=True)
                     for planet, data in planet_positions.items():
                         planet_name = PLANET_NAMES.get(planet, planet)
-                        st.write(f"✨ {planet_name}: {data['longitude']:.2f}°")
+                        signo = calcular_signo(data['longitude'])
+                        st.write(f"✨ {planet_name}: {data['longitude']:.2f}° em {signo}")
 
                     st.markdown("<h3>🏠 Cúspides das Casas</h3>", unsafe_allow_html=True)
                     for i, cusp in enumerate(houses['cusps'], 1):
-                        st.write(f"Casa {i}: {cusp:.2f}°")
+                        signo_casa = calcular_signo(cusp)
+                        st.write(f"Casa {i}: {cusp:.2f}° em {signo_casa}")
                     st.markdown("</div>", unsafe_allow_html=True)
 
-                    st.markdown("<div class='cosmic-card'>", unsafe_allow_html=True)
+                    st.markdown("<div class='services-section'>", unsafe_allow_html=True)
                     st.markdown("<h3>🌟 Pontos Importantes</h3>", unsafe_allow_html=True)
-                    st.write(f"⭐ Ascendente: {houses['ascendant']:.2f}°")
-                    st.write(f"🌠 Meio do Céu: {houses['mc']:.2f}°")
+                    asc_signo = calcular_signo(houses['ascendant'])
+                    mc_signo = calcular_signo(houses['mc'])
+                    st.write(f"⭐ Ascendente: {houses['ascendant']:.2f}° em {asc_signo}")
+                    st.write(f"🌠 Meio do Céu: {houses['mc']:.2f}° em {mc_signo}")
                     st.markdown("</div>", unsafe_allow_html=True)
 
         except Exception as e:
@@ -286,7 +352,12 @@ with tab2:
 
 # Rodapé
 st.markdown("""
-<div class='cosmic-card' style='text-align: center; margin-top: 2rem;'>
+<div class='footer'>
+    <div class='social-links'>
+        <a href="#" target="_blank">📱</a>
+        <a href="#" target="_blank">📘</a>
+        <a href="#" target="_blank">📸</a>
+    </div>
     <p>Feito com ✨ e energia cósmica</p>
 </div>
 """, unsafe_allow_html=True)

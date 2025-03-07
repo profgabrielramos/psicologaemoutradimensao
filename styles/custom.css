@@ -3,8 +3,12 @@
     --primary-color: #9b6dff;
     --secondary-color: #4a90e2;
     --accent-color: #ffd700;
-    --background-color: #1a1a2e;
+    --background-color: #0f0f1e;
+    --card-bg-color: rgba(26, 26, 46, 0.8);
     --text-color: #ffffff;
+    --text-secondary: #d1c4e9;
+    --cta-gradient: linear-gradient(45deg, #9b6dff, #ff6dbd);
+    --cta-hover-gradient: linear-gradient(45deg, #8a5ce6, #e55aa7);
 }
 
 /* Estilos globais */
@@ -22,6 +26,7 @@
     padding: 2rem 0;
     position: relative;
     overflow: hidden;
+    margin-bottom: 2rem;
 }
 
 .title-container h1 {
@@ -30,14 +35,21 @@
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
     margin-bottom: 1rem;
     animation: glow 2s ease-in-out infinite alternate;
+    font-size: 2.5rem;
+    letter-spacing: 0.05em;
 }
 
 .title-container img {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     box-shadow: 0 0 20px var(--accent-color);
     margin-bottom: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.title-container img:hover {
+    transform: scale(1.05);
 }
 
 /* Efeito de partículas mágicas */
@@ -51,58 +63,228 @@
     z-index: 0;
 }
 
-/* Container do chat */
-.chat-container {
-    background: rgba(26, 26, 46, 0.8);
+/* Hero Section */
+.hero-section {
+    background: var(--card-bg-color);
     border-radius: 15px;
-    padding: 20px;
-    margin: 20px 0;
-    box-shadow: 0 0 20px rgba(155, 109, 255, 0.2);
+    padding: 30px;
+    margin: 20px 0 40px 0;
+    box-shadow: 0 0 30px rgba(155, 109, 255, 0.3);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(155, 109, 255, 0.1) 0%, transparent 70%);
+    animation: rotate 20s linear infinite;
+    z-index: -1;
+}
+
+.hero-section h2 {
+    color: var(--accent-color);
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.8;
+}
+
+/* Serviços */
+.services-section {
+    background: var(--card-bg-color);
+    border-radius: 15px;
+    padding: 30px;
+    margin: 40px 0;
+    box-shadow: 0 0 30px rgba(155, 109, 255, 0.2);
     backdrop-filter: blur(10px);
 }
 
+.services-section h2 {
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.service-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.service-item:hover {
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.service-item i {
+    color: var(--accent-color);
+    margin-right: 15px;
+    font-size: 1.2rem;
+}
+
+/* Depoimentos */
+.testimonials-section {
+    background: var(--card-bg-color);
+    border-radius: 15px;
+    padding: 30px;
+    margin: 40px 0;
+    box-shadow: 0 0 30px rgba(155, 109, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.testimonials-section h2 {
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.testimonial-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.testimonial-card::before {
+    content: '"';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 3rem;
+    color: rgba(155, 109, 255, 0.2);
+    font-family: Georgia, serif;
+}
+
+.testimonial-text {
+    font-style: italic;
+    margin-bottom: 10px;
+    padding-left: 20px;
+}
+
+.testimonial-author {
+    text-align: right;
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+/* Container do chat */
+.chat-container {
+    background: var(--card-bg-color);
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 0 30px rgba(155, 109, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.chat-container h2 {
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
 .chat-message {
-    padding: 10px 15px;
-    margin: 10px 0;
+    padding: 15px;
+    margin: 15px 0;
     border-radius: 10px;
     animation: fadeIn 0.5s ease-out;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
 }
 
 .user-message {
     background: rgba(74, 144, 226, 0.2);
     margin-left: 20%;
+    border-top-right-radius: 0;
 }
 
 .assistant-message {
     background: rgba(155, 109, 255, 0.2);
     margin-right: 20%;
+    border-top-left-radius: 0;
 }
 
 /* Formulário do mapa astral */
 .form-container {
-    background: rgba(26, 26, 46, 0.8);
+    background: var(--card-bg-color);
     border-radius: 15px;
-    padding: 20px;
+    padding: 30px;
     margin: 20px 0;
-    box-shadow: 0 0 20px rgba(155, 109, 255, 0.2);
+    box-shadow: 0 0 30px rgba(155, 109, 255, 0.3);
     backdrop-filter: blur(10px);
+}
+
+.form-container h2 {
+    color: var(--accent-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.form-container p {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--text-secondary);
 }
 
 /* Botões personalizados */
 .stButton > button {
-    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    background: var(--cta-gradient);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
+    padding: 12px 25px;
+    border-radius: 30px;
     font-weight: bold;
+    font-size: 1.1rem;
     transition: all 0.3s ease;
-    box-shadow: 0 0 10px rgba(155, 109, 255, 0.3);
+    box-shadow: 0 5px 15px rgba(155, 109, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .stButton > button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(155, 109, 255, 0.5);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(155, 109, 255, 0.6);
+    background: var(--cta-hover-gradient);
+}
+
+.stButton > button:active {
+    transform: translateY(1px);
+}
+
+/* CTA principal */
+.main-cta button {
+    font-size: 1.2rem !important;
+    padding: 15px 30px !important;
+    background: linear-gradient(45deg, #ff6dbd, #9b6dff) !important;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(155, 109, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(155, 109, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(155, 109, 255, 0);
+    }
 }
 
 /* Animações */
@@ -130,6 +312,15 @@
     }
 }
 
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* Efeito de névoa */
 .mist-effect {
     position: fixed;
@@ -152,20 +343,73 @@
     }
 }
 
+/* Rodapé */
+.footer {
+    text-align: center;
+    padding: 30px 0;
+    margin-top: 50px;
+    background: rgba(15, 15, 30, 0.7);
+    border-radius: 15px;
+}
+
+.footer p {
+    color: var(--text-secondary);
+}
+
+.social-links {
+    margin: 15px 0;
+}
+
+.social-links a {
+    color: var(--accent-color);
+    margin: 0 10px;
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.social-links a:hover {
+    transform: translateY(-3px);
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
+    .title-container h1 {
+        font-size: 2rem;
+    }
+    
+    .hero-section {
+        padding: 20px;
+    }
+    
+    .hero-section h2 {
+        font-size: 1.5rem;
+    }
+    
+    .hero-section p {
+        font-size: 1rem;
+    }
+    
     .chat-message {
         margin-left: 5%;
         margin-right: 5%;
     }
+    
+    .stButton > button {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
 }
 
 /* Customização dos widgets do Streamlit */
-.stTextInput > div > div > input {
+.stTextInput > div > div > input,
+.stDateInput > div > div > input,
+.stTimeInput > div > div > input {
     background-color: rgba(255, 255, 255, 0.1);
     color: var(--text-color);
     border: 1px solid var(--primary-color);
     border-radius: 10px;
+    padding: 10px 15px;
+    font-size: 1rem;
 }
 
 .stSelectbox > div > div > select {
@@ -194,147 +438,41 @@
     filter: blur(8px);
 }
 
-/* Card styling */
-.cosmic-card {
-    background: rgba(28, 28, 28, 0.95);
-    border: 1px solid rgba(156, 39, 176, 0.3);
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 0 20px rgba(156, 39, 176, 0.2);
-    transition: all 0.3s ease;
-    margin-bottom: 20px;
+/* Tabs personalizadas */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 10px;
+    background-color: rgba(15, 15, 30, 0.7);
+    border-radius: 30px;
+    padding: 5px;
 }
 
-.cosmic-card:hover {
-    box-shadow: 0 0 30px rgba(156, 39, 176, 0.4);
-    transform: translateY(-2px);
-}
-
-/* Text styling */
-.glow-text {
-    color: #FF4081;
-    text-shadow: 0 0 10px rgba(255, 64, 129, 0.5);
-    font-size: 2.5rem;
-    font-weight: 600;
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-h1, h2, h3 {
-    color: #FFFFFF;
-    margin-bottom: 20px;
-    font-weight: 600;
-}
-
-p, li {
-    color: #E0E0E0;
-    font-size: 1.1rem;
-    line-height: 1.8;
-}
-
-/* Chart container styling */
-.chart-container {
-    border-radius: 50%;
-    box-shadow: 0 0 30px rgba(156, 39, 176, 0.3);
-    padding: 20px;
-    background: rgba(28, 28, 28, 0.8);
+.stTabs [data-baseweb="tab"] {
+    border-radius: 30px;
+    padding: 10px 20px;
+    background-color: transparent;
+    color: var(--text-secondary);
+    font-weight: bold;
     transition: all 0.3s ease;
 }
 
-.chart-container:hover {
-    box-shadow: 0 0 40px rgba(156, 39, 176, 0.5);
+.stTabs [aria-selected="true"] {
+    background-color: var(--primary-color);
+    color: white;
 }
 
-/* Form inputs styling */
-.stTextInput > div > div, .stDateInput > div > div, .stTimeInput > div > div {
-    background: rgba(40, 40, 40, 0.9) !important;
-    border: 1px solid rgba(156, 39, 176, 0.5) !important;
-    border-radius: 8px !important;
-    color: #FFFFFF !important;
-    font-size: 1.1rem !important;
-    transition: all 0.3s ease;
-}
-
-.stTextInput > div > div:focus-within, 
-.stDateInput > div > div:focus-within, 
-.stTimeInput > div > div:focus-within {
-    border-color: #FF4081 !important;
-    box-shadow: 0 0 10px rgba(255, 64, 129, 0.3) !important;
-}
-
-/* Labels and text inputs */
-.stTextInput label, .stDateInput label, .stTimeInput label {
-    color: #FFFFFF !important;
-    font-size: 1.1rem !important;
-    font-weight: 500 !important;
-    margin-bottom: 8px !important;
-}
-
-/* Loading spinner */
-.stSpinner > div {
-    border-color: #FF4081 !important;
-}
-
-/* Error messages */
+/* Alerta personalizado */
 .stAlert {
-    background: rgba(244, 67, 54, 0.1) !important;
-    border-color: rgba(244, 67, 54, 0.5) !important;
-    color: #FFFFFF !important;
+    background-color: rgba(255, 87, 87, 0.2);
+    border-left: 5px solid #ff5757;
+    border-radius: 10px;
+    padding: 15px;
+    color: #ffcccc;
 }
 
-/* Success messages */
 .stSuccess {
-    background: rgba(76, 175, 80, 0.1) !important;
-    border-color: rgba(76, 175, 80, 0.5) !important;
-    color: #FFFFFF !important;
-}
-
-/* Estilo especial para o card do signo solar */
-.signo-solar-card {
-    background: linear-gradient(135deg, rgba(156, 39, 176, 0.2) 0%, rgba(255, 64, 129, 0.2) 100%);
-    text-align: center;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border: 2px solid rgba(156, 39, 176, 0.5);
-    transform: translateY(0);
-    transition: all 0.3s ease;
-}
-
-.signo-solar-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(156, 39, 176, 0.3);
-}
-
-.signo-symbol {
-    font-size: 4rem;
-    color: #FF4081;
-    text-shadow: 0 0 20px rgba(255, 64, 129, 0.5);
-    margin-bottom: 1rem;
-    animation: float 3s ease-in-out infinite;
-}
-
-.signo-nome {
-    font-size: 2.5rem;
-    color: #FFFFFF;
-    margin: 1rem 0;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-}
-
-.signo-grau {
-    font-size: 1.2rem;
-    color: #E0E0E0;
-    font-family: 'Courier New', monospace;
-}
-
-@keyframes float {
-    0% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
-    100% {
-        transform: translateY(0px);
-    }
+    background-color: rgba(87, 255, 173, 0.2);
+    border-left: 5px solid #57ffad;
+    border-radius: 10px;
+    padding: 15px;
+    color: #ccffee;
 }
